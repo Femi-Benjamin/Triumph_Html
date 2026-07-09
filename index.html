@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triumph Anointing — Motion Designer &amp; Video Editor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg:#17140F;
+    --bg-raised:#1E1A14;
+    --paper:#F2ECDF;
+    --amber:#D9A441;
+    --teal:#2C5C56;
+    --teal-bright:#4E9C90;
+    --line: rgba(242,236,223,0.14);
+    --muted: rgba(242,236,223,0.56);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--amber); color:#17140F; }
+
+  h1,h2,h3{ font-family:'Archivo Expanded', sans-serif; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .wrap{ max-width:1160px; margin:0 auto; padding:0 32px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  /* ===== TIMELINE NAV — the signature element ===== */
+  .timeline-nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(23,20,15,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .timeline-track{
+    max-width:1160px; margin:0 auto;
+    display:flex; align-items:center;
+    height:56px; padding:0 32px;
+    gap:0;
+    position:relative;
+  }
+  .timeline-ruler{
+    position:absolute; left:32px; right:32px; top:0;
+    height:56px; display:flex; align-items:flex-end;
+    pointer-events:none;
+  }
+  .timeline-ruler::before{
+    content:''; position:absolute; left:0; right:0; bottom:0;
+    height:1px; background:var(--line);
+  }
+  .clip{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:var(--muted);
+    text-transform:uppercase;
+    padding:8px 14px 12px;
+    border-left:1px solid var(--line);
+    cursor:pointer;
+    position:relative;
+    transition:color .2s ease;
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .clip:first-child{ border-left:none; }
+  .clip .tc{ color:var(--amber); font-size:10px; opacity:0.85; }
+  .clip:hover, .clip.active{ color:var(--paper); }
+  .clip.active .tc{ color:var(--teal-bright); }
+  .playhead{
+    position:absolute; top:0; width:2px; height:56px;
+    background:var(--amber);
+    box-shadow:0 0 8px rgba(217,164,65,0.7);
+    transition:left .35s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+  }
+  .playhead::before{
+    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:6px solid var(--amber);
+  }
+  .brand-mark{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+    padding-right:20px; border-right:1px solid var(--line); margin-right:4px;
+    white-space:nowrap;
+  }
+
+  section{ padding:140px 0 110px; position:relative; border-bottom:1px solid var(--line); }
+
+  /* ===== HERO ===== */
+  .hero{ min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding-top:56px; }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--amber); text-transform:uppercase; margin-bottom:28px;
+    display:flex; align-items:center; gap:18px;
+  }
+  .hero-eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--teal-bright); animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .hero h1{
+    font-size:clamp(48px, 8vw, 104px);
+    line-height:0.98;
+    font-weight:800;
+    max-width:900px;
+  }
+  .hero h1 em{ font-style:normal; color:var(--amber); }
+  .hero-sub{
+    margin-top:22px;
+    font-size:16px;
+    line-height:1.85;
+    color:var(--muted);
+    max-width:520px;
+    font-weight:400;
+    letter-spacing:0.01em;
+  }
+  .hero-actions{ margin-top:44px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.04em;
+    padding:16px 28px; border-radius:2px; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .btn-primary{ background:var(--amber); color:#17140F; font-weight:600; }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-ghost{ border:1px solid var(--line); color:var(--paper); }
+  .btn-ghost:hover{ border-color:var(--teal-bright); color:var(--teal-bright); }
+
+/* hero-scope (removed) */
+
+  /* ===== SECTION HEADERS ===== */
+  .sec-head{ display:flex; align-items:baseline; gap:18px; margin-bottom:56px; }
+  .sec-tc{ font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--amber); }
+  .sec-head h2{ font-size:clamp(30px,4vw,44px); font-weight:700; }
+  .sec-rule{ flex:1; height:1px; background:var(--line); }
+
+  /* ===== WORK ===== */
+  .reel{ display:flex; flex-direction:column; gap:2px; }
+  .clip-row{
+    display:grid; grid-template-columns:260px 1fr auto; gap:28px; align-items:center;
+    padding:24px; border:1px solid transparent; border-top:1px solid var(--line);
+    transition:background .25s ease, border-color .25s ease;
+    position:relative;
+  }
+  .reel .clip-row:last-child{ border-bottom:1px solid var(--line); }
+  .clip-row:hover{ background:var(--bg-raised); border-color:var(--line); }
+  .clip-num{ font-family:'JetBrains Mono', monospace; color:var(--muted); font-size:13px; display:block; margin-bottom:8px; }
+  .clip-title{ font-size:22px; font-weight:600; font-family:'Archivo Expanded',sans-serif; margin-bottom:6px; }
+  .clip-desc{ color:var(--muted); font-size:15px; line-height:1.55; max-width:560px; }
+  .clip-tags{ margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+  .tag{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.03em;
+    color:var(--teal-bright); border:1px solid var(--teal); padding:4px 9px; text-transform:uppercase;
+  }
+  .clip-meta{ text-align:right; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); white-space:nowrap; }
+  .clip-meta .dur{ color:var(--amber); display:block; font-size:14px; margin-bottom:4px; }
+  .clip-meta a{ color:var(--muted); border-bottom:1px dashed var(--line); }
+  .clip-meta a:hover{ color:var(--teal-bright); border-color:var(--teal-bright); }
+
+  .reel-note{
+    margin-top:28px; font-size:13px; color:var(--muted); font-family:'JetBrains Mono', monospace;
+    border-left:2px solid var(--amber); padding-left:14px;
+  }
+
+  /* ===== PER-PROJECT AUTOPLAY PREVIEW ===== */
+  .clip-preview{
+    position:relative; aspect-ratio:16/9; width:100%;
+    background:#000; border:1px solid var(--line); overflow:hidden;
+  }
+  .clip-preview iframe{
+    position:absolute; top:50%; left:50%;
+    width:178%; height:178%;
+    transform:translate(-50%,-50%);
+    border:0; pointer-events:none;
+  }
+  .clip-preview::after{
+    content:''; position:absolute; inset:0;
+    box-shadow:inset 0 0 0 1px rgba(217,164,65,0); pointer-events:none;
+    transition:box-shadow .2s ease;
+  }
+  .clip-row:hover .clip-preview::after{ box-shadow:inset 0 0 0 1px var(--amber); }
+  .clip-preview .watch{
+    position:absolute; bottom:8px; right:8px; z-index:2;
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.04em;
+    background:rgba(23,20,15,0.85); color:var(--paper); padding:5px 9px;
+    text-transform:uppercase; border:1px solid var(--line);
+    pointer-events:auto;
+  }
+  .clip-preview .watch:hover{ border-color:var(--amber); color:var(--amber); }
+  @media(max-width:640px){ .clip-row{ grid-template-columns:1fr; } }
+
+  /* ===== TOOLS (software reel) ===== */
+  .tools-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .tool-card{ background:var(--bg); padding:36px 28px; }
+  .tool-card .tc{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber); margin-bottom:14px; display:block; }
+  .tool-card h3{ font-size:22px; margin-bottom:12px; }
+  .tool-card p{ color:var(--muted); font-size:14px; line-height:1.6; }
+
+  /* ===== ABOUT ===== */
+  .about-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:72px; align-items:start; }
+  @media(max-width:800px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-text p{ font-size:18px; line-height:1.75; color:var(--paper); margin-bottom:20px; }
+  .about-text p:last-child{ margin-bottom:0; }
+  .about-text strong{ color:var(--amber); font-weight:600; }
+  .spec-sheet{ font-family:'JetBrains Mono',monospace; font-size:13px; border:1px solid var(--line); }
+  .spec-row{ display:flex; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line); }
+  .spec-row:last-child{ border-bottom:none; }
+  .spec-row span:first-child{ color:var(--muted); }
+  .spec-row span:last-child{ color:var(--teal-bright); text-align:right; }
+
+  /* ===== CONTACT ===== */
+  .contact{ border-bottom:none; padding-bottom:80px; }
+  .contact-inner{ display:flex; flex-direction:column; align-items:flex-start; gap:32px; }
+  .contact h2{ font-size:clamp(36px,6vw,64px); max-width:760px; line-height:1.05; }
+  .contact-links{ display:flex; gap:14px; flex-wrap:wrap; }
+  footer{
+    padding:28px 0 40px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  @media(max-width:640px){
+    .timeline-track{ overflow-x:auto; }
+    .clip{ padding:8px 10px 12px; font-size:10px; }
+    section{ padding:110px 0 70px; }
+    .clip-row{ grid-template-columns:1fr; gap:12px; }
+    .clip-meta{ text-align:left; }
+  }
+
+  :focus-visible{ outline:2px solid var(--amber); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<nav class="timeline-nav">
+  <div class="timeline-track" id="track">
+    <span class="brand-mark">TRIUMPH_ANOINTING.MOV</span>
+    <div class="clip active" data-target="#hero"><span class="tc">00:00:00</span>INTRO</div>
+    <div class="clip" data-target="#work"><span class="tc">00:00:12</span>WORK</div>
+    <div class="clip" data-target="#tools"><span class="tc">00:00:34</span>TOOLKIT</div>
+    <div class="clip" data-target="#about"><span class="tc">00:00:51</span>ABOUT</div>
+    <div class="clip" data-target="#contact"><span class="tc">00:01:08</span>CONTACT</div>
+    <div class="playhead" id="playhead" style="left:80px;"></div>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow"><span class="dot"></span><span class="avail">AVAILABLE FOR WORK</span><span class="loc">— LAGOS, NG / REMOTE</span></div>
+    <h1>I'm Triumph<br><em>Video editor/motiondesigner</em></h1>
+    <p class="hero-sub">I'm Triumph — a motion designer and video editor working across After Effects, DaVinci Resolve, and Blender. I've spent the last stretch cutting SaaS launch films and product promos, and I build every edit like it has thirty seconds to earn attention.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#work">View the reel ↓</a>
+      <a class="btn btn-ghost" href="https://youtube.com/@triumphanointing5802" target="_blank" rel="noopener">YouTube Channel ↗</a>
+    </div>
+  </div>
+
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-tc">00:00:12</span><h2>Selected work</h2><div class="sec-rule"></div></div>
+
+    <div class="reel">
+      <div class="clip-row">
+        <div class="clip-preview">
+          <iframe src="https://www.youtube.com/embed/WgSGrkhBr6I?autoplay=1&mute=1&loop=1&playlist=WgSGrkhBr6I&controls=0&modestbranding=1&rel=0&playsinline=1" title="June Healthcare preview" loading="lazy" allow="autoplay; encrypted-media"></iframe>
+          <a class="watch" href="https://youtu.be/WgSGrkhBr6I" target="_blank" rel="noopener">Watch full ↗</a>
+        </div>
+        <div>
+          <span class="clip-num">01</span>
+          <div class="clip-title">June Healthcare</div>
+          <div class="clip-desc">Motion and edit work for a healthcare brand piece — pacing and visuals built to make a clinical subject feel approachable and clear.</div>
+          <div class="clip-tags"><span class="tag">After Effects</span><span class="tag">Editing</span><span class="tag">Healthcare</span></div>
+        </div>
+        <div class="clip-meta"><span class="dur">PROMO</span>Healthcare</div>
+      </div>
+
+      <div class="clip-row">
+        <div class="clip-preview">
+          <iframe src="https://www.youtube.com/embed/lGo-JJTFTak?autoplay=1&mute=1&loop=1&playlist=lGo-JJTFTak&controls=0&modestbranding=1&rel=0&playsinline=1" title="Silo preview" loading="lazy" allow="autoplay; encrypted-media"></iframe>
+          <a class="watch" href="https://youtu.be/lGo-JJTFTak" target="_blank" rel="noopener">Watch full ↗</a>
+        </div>
+        <div>
+          <span class="clip-num">02</span>
+          <div class="clip-title">Silo</div>
+          <div class="clip-desc">Product/brand video edit — narrative pacing and motion graphics built to carry a product story from open to close.</div>
+          <div class="clip-tags"><span class="tag">DaVinci Resolve</span><span class="tag">Motion Graphics</span></div>
+        </div>
+        <div class="clip-meta"><span class="dur">PROMO</span>Product</div>
+      </div>
+
+      <div class="clip-row">
+        <div class="clip-preview">
+          <iframe src="https://www.youtube.com/embed/aI6wCKmcZ5s?autoplay=1&mute=1&loop=1&playlist=aI6wCKmcZ5s&controls=0&modestbranding=1&rel=0&playsinline=1" title="Shipp Bubble preview" loading="lazy" allow="autoplay; encrypted-media"></iframe>
+          <a class="watch" href="https://youtu.be/aI6wCKmcZ5s" target="_blank" rel="noopener">Watch full ↗</a>
+        </div>
+        <div>
+          <span class="clip-num">03</span>
+          <div class="clip-title">Shipp Bubble</div>
+          <div class="clip-desc">Full edit and motion design pass — sound, pacing, and graphics assembled into a single finished cut.</div>
+          <div class="clip-tags"><span class="tag">After Effects</span><span class="tag">Sound Design</span></div>
+        </div>
+        <div class="clip-meta"><span class="dur">PROMO</span>Brand film</div>
+      </div>
+
+      <div class="clip-row">
+        <div class="clip-preview">
+          <iframe src="https://www.youtube.com/embed/zDrMw4qObng?autoplay=1&mute=1&loop=1&playlist=zDrMw4qObng&controls=0&modestbranding=1&rel=0&playsinline=1" title="Kloudaa preview" loading="lazy" allow="autoplay; encrypted-media"></iframe>
+          <a class="watch" href="https://youtu.be/zDrMw4qObng" target="_blank" rel="noopener">Watch full ↗</a>
+        </div>
+        <div>
+          <span class="clip-num">04</span>
+          <div class="clip-title">Kloudaa</div>
+          <div class="clip-desc">SaaS product edit — built to explain the product clearly and hold attention across a short runtime.</div>
+          <div class="clip-tags"><span class="tag">DaVinci Resolve</span><span class="tag">SaaS</span></div>
+        </div>
+        <div class="clip-meta"><span class="dur">PROMO</span>SaaS</div>
+      </div>
+    </div>
+
+    <p class="reel-note">// Previews autoplay muted on load — click "Watch full" to open the video on YouTube with sound.</p>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-tc">00:00:34</span><h2>Toolkit</h2><div class="sec-rule"></div></div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tc">// 01</span>
+        <h3>After Effects</h3>
+        <p>Motion graphics, kinetic type, custom expressions, and layered composites — the primary instrument for anything that needs to move with intent.</p>
+      </div>
+      <div class="tool-card">
+        <span class="tc">// 02</span>
+        <h3>DaVinci Resolve</h3>
+        <p>Editing and color grading end to end — pacing, sound sync, and a finished grade that gives every piece a consistent, deliberate look.</p>
+      </div>
+      <div class="tool-card">
+        <span class="tc">// 03</span>
+        <h3>Blender</h3>
+        <p>3D and render work for pieces that need to step outside flat motion graphics — product visualizations, abstract sequences, contest-grade builds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-tc">00:00:51</span><h2>About</h2><div class="sec-rule"></div></div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I work at the point where <strong>motion design meets product marketing</strong> — most of my recent output has been explainer films and launch promos for SaaS and product teams who need a complicated idea to land in under a minute.</p>
+        <p>That means I don't just animate — I think in terms of what a viewer needs to understand and when, then build the cut, the sound, and the grade to serve that. It's the same instinct I bring whether I'm in After Effects building a sequence frame by frame, or in Resolve shaping the final pace of an edit.</p>
+        <p>Based in Lagos, working with teams anywhere.</p>
+      </div>
+      <div class="spec-sheet">
+        <div class="spec-row"><span>NAME</span><span>Triumph Anointing</span></div>
+        <div class="spec-row"><span>ROLE</span><span>Motion Designer / Editor</span></div>
+        <div class="spec-row"><span>SOFTWARE</span><span>AE, Resolve, Blender</span></div>
+        <div class="spec-row"><span>FOCUS</span><span>SaaS &amp; Product Video</span></div>
+        <div class="spec-row"><span>LOCATION</span><span>Lagos, Nigeria</span></div>
+        <div class="spec-row"><span>AVAILABILITY</span><span>Open to roles</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap contact-inner">
+    <span class="sec-tc">00:01:08</span>
+    <h2>Got something that needs to move? Let's cut it together.</h2>
+    <div class="contact-links">
+      <a class="btn btn-primary" href="mailto:hello@titanleap.co">Email Me</a>
+      <a class="btn btn-ghost" href="https://youtube.com/@triumphanointing5802" target="_blank" rel="noopener">YouTube ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>© 2026 Triumph Anointing — Motion Design &amp; Video Editing</span>
+  <span>REEL_V1.MOV / LAGOS, NG</span>
+</footer>
+
+<script>
+  const clips = document.querySelectorAll('.clip');
+  const playhead = document.getElementById('playhead');
+  const sections = [...clips].map(c => document.querySelector(c.dataset.target));
+
+  function positionPlayhead(el){
+    const track = document.getElementById('track').getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
+    playhead.style.left = (rect.left - track.left) + 'px';
+  }
+
+  clips.forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelector(c.dataset.target).scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  function setActive(){
+    let current = sections[0];
+    const scrollPos = window.scrollY + 120;
+    sections.forEach((sec, i) => {
+      if(sec && sec.offsetTop <= scrollPos){ current = sec; }
+    });
+    clips.forEach((c,i) => {
+      const isActive = sections[i] === current;
+      c.classList.toggle('active', isActive);
+      if(isActive) positionPlayhead(c);
+    });
+  }
+
+  window.addEventListener('scroll', setActive, {passive:true});
+  window.addEventListener('resize', setActive);
+  window.addEventListener('load', setActive);
+</script>
+
+</body>
+</html>
