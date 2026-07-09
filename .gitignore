@@ -1,0 +1,16 @@
+# Ignore typical OS and editor files
+.DS_Store
+Thumbs.db
+
+# Python server files
+*.pyc
+__pycache__/
+
+# VS Code workspace files
+.vscode/
+
+# Node modules if added later
+node_modules/
+
+# Logs
+*.log
